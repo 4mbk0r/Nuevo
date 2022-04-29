@@ -19,7 +19,12 @@ use App\Http\Controllers\PersonaCitaController;
 */
 
 Route::get('/', function () {
-    return 'hola';
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
