@@ -10,7 +10,10 @@
 @import "vuetify/dist/vuetify.min.css";
 
 .v-data-table-header th {
-    white-space: nowrap;
-    background-color: cornflowerblue;
-    color: white;
-  }
+  white-space: nowrap;
+  background-color: cornflowerblue;
+  color: white;
+}
+
+@import '~@mdi/font/css/materialdesignicons.min.css';
+

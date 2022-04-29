@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\personas_antiguo;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
@@ -52,9 +53,16 @@ class PersonaAntiguoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public static function mostrar($id)
+    public static function mostrar()
     {
-        return "hola";
+
+        if ( Cache::has('citas') ) {
+            return Cache::get('citas');
+        } else {
+            $users = DB::select('SELECT * FROM citas');
+            Cache::put('citas', $users);                                         
+            return $users;           
+        } 
     }
     /**
      * Display the specified resource.
