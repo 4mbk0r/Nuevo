@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\PdfViewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonaAntiguoController;
@@ -56,4 +57,9 @@ Route::post('/update_usuario', function (Request $request) {
 
 Route::post('/dar_cita', function (Request $request) {
     return CitaController::dar_cita($request);
+});
+
+
+Route::post('/imprimir', function (Request $request) {
+    return PdfViewController::store($request);
 });

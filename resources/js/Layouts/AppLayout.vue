@@ -115,7 +115,7 @@
                                         </jet-dropdown-link>
 
                                         <jet-dropdown-link :href="route('api-tokens.index')" v-if="$page.props.jetstream.hasApiFeatures">
-                                            API Tokens
+                          secure                  API Tokens
                                         </jet-dropdown-link>
 
                                         <div class="border-t border-gray-100"></div>

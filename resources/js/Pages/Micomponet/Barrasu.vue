@@ -193,19 +193,23 @@
                             </v-btn>
                             <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                             <v-spacer></v-spacer>
-                            <v-btn icon>
+                            <!--<v-btn icon>
+
                                 <v-icon>mdi-heart</v-icon>
                             </v-btn>
                             <v-btn icon>
                                 <v-icon>mdi-dots-vertical</v-icon>
-                            </v-btn>
+                            </v-btn>-->
                         </v-toolbar>
                         <v-card-text>
                             <span v-html="selectedEvent.details"></span>
                             <v-toolbar-title v-html="selectedEvent.id"></v-toolbar-title>
-                            
+                            <v-toolbar-title v-html="selectedEvent.fecha"></v-toolbar-title>
                         </v-card-text>
                         <v-card-actions>
+                            <v-btn color="primary" @click="imprimir">
+                                Imprimir
+                            </v-btn>
                             <v-btn text color="secondary" @click="selectedOpen = false">
                                 Cancel
                             </v-btn>
@@ -329,6 +333,32 @@ export default {
         this.initialize()
     },
     methods: {
+        async imprimir() {
+            var usuario = this.selectedEvent;
+            var res = await axios({
+                    method: 'post',
+                    url: 'api/imprimir',
+                    responseType: 'blob',
+                    data: {
+                        usuario: usuario,
+                    }
+                }).then(
+                    response => {
+                        //Create a Blob from the PDF Stream
+                        const file = new Blob(
+                            [response.data], {
+                                type: 'application/pdf'
+                            });
+                        //Build a URL from the file
+                        const fileURL = URL.createObjectURL(file);
+                        //Open the URL on new Window
+                        window.open(fileURL);
+                    })
+                .catch(error => {
+                    console.log(error);
+                });
+                //this.$inertia.get('api/imprimir', usuario);
+        },
         showEvent({
             nativeEvent,
             event
@@ -547,6 +577,11 @@ export default {
                 var datos = {
                     name: element.nombre,
                     id: element.ci,
+                    fecha: element.fecha,
+                    ap_materno: element.ap_materno,
+                    ap_paterno: element.ap_paterno,
+                    hora: element.hora_inicio,
+                    sala: element.equipo,
                     start: first,
                     end: second,
                     color: this.colors[Math.floor(Math.random() * this.colors.length)],

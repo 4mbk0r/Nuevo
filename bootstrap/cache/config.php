@@ -36,12 +36,13 @@
       19 => 'Illuminate\\Translation\\TranslationServiceProvider',
       20 => 'Illuminate\\Validation\\ValidationServiceProvider',
       21 => 'Illuminate\\View\\ViewServiceProvider',
-      22 => 'App\\Providers\\AppServiceProvider',
-      23 => 'App\\Providers\\AuthServiceProvider',
-      24 => 'App\\Providers\\EventServiceProvider',
-      25 => 'App\\Providers\\RouteServiceProvider',
-      26 => 'App\\Providers\\FortifyServiceProvider',
-      27 => 'App\\Providers\\JetstreamServiceProvider',
+      22 => 'Barryvdh\\DomPDF\\ServiceProvider',
+      23 => 'App\\Providers\\AppServiceProvider',
+      24 => 'App\\Providers\\AuthServiceProvider',
+      25 => 'App\\Providers\\EventServiceProvider',
+      26 => 'App\\Providers\\RouteServiceProvider',
+      27 => 'App\\Providers\\FortifyServiceProvider',
+      28 => 'App\\Providers\\JetstreamServiceProvider',
     ),
     'aliases' => 
     array (
@@ -83,6 +84,7 @@
       'URL' => 'Illuminate\\Support\\Facades\\URL',
       'Validator' => 'Illuminate\\Support\\Facades\\Validator',
       'View' => 'Illuminate\\Support\\Facades\\View',
+      'PDF' => 'Barryvdh\\DomPDF\\Facade',
     ),
   ),
   'auth' => 
@@ -347,6 +349,30 @@
         'port' => '6379',
         'database' => '1',
       ),
+    ),
+  ),
+  'dompdf' => 
+  array (
+    'show_warnings' => false,
+    'orientation' => 'portrait',
+    'convert_entities' => true,
+    'defines' => 
+    array (
+      'font_dir' => 'C:\\xampp8.1\\htdocs\\example-app\\storage\\fonts',
+      'font_cache' => 'C:\\xampp8.1\\htdocs\\example-app\\storage\\fonts',
+      'temp_dir' => 'C:\\Users\\hp\\AppData\\Local\\Temp',
+      'chroot' => 'C:\\xampp8.1\\htdocs\\example-app',
+      'enable_font_subsetting' => false,
+      'pdf_backend' => 'CPDF',
+      'default_media_type' => 'screen',
+      'default_paper_size' => 'a4',
+      'default_font' => 'serif',
+      'dpi' => 96,
+      'enable_php' => false,
+      'enable_javascript' => true,
+      'enable_remote' => true,
+      'font_height_ratio' => 1.1,
+      'enable_html5_parser' => false,
     ),
   ),
   'filesystems' => 
