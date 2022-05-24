@@ -886,7 +886,7 @@ export default {
             this.doctorlista()
         },
         async doctorlista() {
-            let url = 'https://ultraid-con.herokuapp.com/public/api/doctor';
+            let url = '/api/doctor';
             var a = await axios.get(url).then();
             this.doctores = a['data'];
 
