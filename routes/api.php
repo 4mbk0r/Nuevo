@@ -67,5 +67,5 @@ Route::post('/imprimir', function (Request $request) {
 
 
 Route::middleware('auth:sanctum')->Route::get('/doctor', function (Request $request) {
-    return DoctorController::listadoctor($request);
+    return DoctorController::listadoctor();
 });

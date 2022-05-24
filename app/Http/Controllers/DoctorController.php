@@ -82,7 +82,7 @@ class DoctorController extends Controller
     {
         //
     }
-    public static function listadoctor(Request $request){
+    public static function listadoctor(){
 
         $doctores = DB::table('doctores')
         ->get();
