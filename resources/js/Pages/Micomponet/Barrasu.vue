@@ -886,7 +886,8 @@ export default {
             this.doctorlista()
         },
         async doctorlista() {
-            var a = await axios.post('api/doctor/').then();
+            let url = 'api/doctor/';
+            var a = await axios.post(url).then();
             this.doctores = a['data'];
 
         },
