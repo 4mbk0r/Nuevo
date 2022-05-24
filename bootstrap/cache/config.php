@@ -2,10 +2,10 @@
   'app' => 
   array (
     'name' => 'Laravel',
-    'env' => 'local',
+    'env' => 'prod',
     'debug' => true,
     'url' => 'http://localhost',
-    'asset_url' => NULL,
+    'asset_url' => '/assets',
     'timezone' => 'America/La_Paz',
     'locale' => 'es',
     'fallback_locale' => 'en',

@@ -47,3 +47,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/administrar', function ()
 })->name('administrar');
 **/
 Route::resource('/administrar', PersonaCitaController::class)->middleware(['auth:sanctum', 'verified']);
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/pdf', function () {
+    return view('myPDF');
+})->name('pdf');

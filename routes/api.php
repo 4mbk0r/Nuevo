@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PdfViewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -62,4 +63,9 @@ Route::post('/dar_cita', function (Request $request) {
 
 Route::post('/imprimir', function (Request $request) {
     return PdfViewController::store($request);
+});
+
+
+Route::get('/doctor', function (Request $request) {
+    return DoctorController::listadoctor();
 });

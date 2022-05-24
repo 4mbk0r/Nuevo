@@ -21,15 +21,17 @@ class CreateCitasTable extends Migration
             $table->time('hora_inicio');
             $table->time('hora_final');
             $table->text('ci',20);
+            $table->text('ci_doctor',20);
             $table->text('tipo_cita',20)->nullable();;
             $table->text('se_presento',20)->nullable();;
             $table->text('observacion')->nullable();;
             $table->integer('equipo');
             $table->text('lugar',20)->nullable();;
             $table->primary(['fecha', 'hora_inicio', 'equipo']);
-                        $table->foreign('ci')->references('ci')->on('persona_citas')->onDelete('cascade');
+            $table->foreign('ci')->references('ci')->on('persona_citas')->onDelete('cascade');
+            $table->foreign('ci_doctor')->references('ci')->on('doctores')->onDelete('cascade');
         });
-        $base  = array(
+        /*$base  = array(
             0 => array(
                 'fecha' => '11/04/2022',
                 'hora_inicio' => '08:30:00',
@@ -2754,7 +2756,7 @@ class CreateCitasTable extends Migration
             DB::table('citas')->insert(
                 $value
             );
-        }
+        }*/
 
     }
 

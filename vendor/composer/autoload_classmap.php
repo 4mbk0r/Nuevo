@@ -32,6 +32,7 @@ return array(
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Http\\Requests\\StorePersona_citaRequest' => $baseDir . '/app/Http/Requests/StorePersona_citaRequest.php',
     'App\\Http\\Requests\\UpdatePersona_citaRequest' => $baseDir . '/app/Http/Requests/UpdatePersona_citaRequest.php',
+    'App\\Models\\Doctores' => $baseDir . '/app/Models/Doctores.php',
     'App\\Models\\Persona_atencion' => $baseDir . '/app/Models/Persona_atencion.php',
     'App\\Models\\Persona_cita' => $baseDir . '/app/Models/Persona_cita.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',

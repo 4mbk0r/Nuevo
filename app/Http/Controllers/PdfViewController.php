@@ -41,13 +41,15 @@ class PdfViewController extends Controller
         
         $data = request('usuario');
         if ( $data) {
-            /// var_dump($data);            
+            /// var_dump($data);
+                        
             $pdf = Pdf::loadView('myPDF', $data );
             return $pdf->download('prueba.pdf');
         }
         $data = [
             'nombre' => 'No existe '
         ];
+        
         $pdf = Pdf::loadView('myPDF', $data);
         return $pdf->download('prueba.pdf');
     }

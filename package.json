@@ -29,8 +29,10 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "@inertiajs/progress": "^0.2.7",
         "i18n": "^0.14.2",
         "moment": "^2.29.1",
+        "nprogress": "^0.2.0",
         "vue-i18n": "^9.1.9",
         "vuetify": "^2.6.4"
     }

@@ -618,6 +618,7 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Http\\Requests\\StorePersona_citaRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StorePersona_citaRequest.php',
         'App\\Http\\Requests\\UpdatePersona_citaRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdatePersona_citaRequest.php',
+        'App\\Models\\Doctores' => __DIR__ . '/../..' . '/app/Models/Doctores.php',
         'App\\Models\\Persona_atencion' => __DIR__ . '/../..' . '/app/Models/Persona_atencion.php',
         'App\\Models\\Persona_cita' => __DIR__ . '/../..' . '/app/Models/Persona_cita.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
