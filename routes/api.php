@@ -66,6 +66,6 @@ Route::post('/imprimir', function (Request $request) {
 });
 
 
-Route::get('/doctor', function (Request $request) {
+Route::post('/doctor', function (Request $request) {
     return DoctorController::listadoctor();
 });
