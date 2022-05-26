@@ -118,7 +118,7 @@
                                 </v-col>
 
                                 <v-col cols="10" md="6" pa-0 solo>
-                                    <v-text-field v-model="numero" type="number" label="Numero Celular" pa-0 solo>
+                                    <v-text-field v-model="numero" type="text" label="Numero Celular" pa-0 solo>
                                     </v-text-field>
                                 </v-col>
                             </v-row>
