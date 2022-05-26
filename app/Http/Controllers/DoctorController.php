@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\Cache;
+
 class DoctorController extends Controller
 {
     /**
@@ -87,5 +89,17 @@ class DoctorController extends Controller
         $doctores = DB::table('doctores')
         ->get();
         return $doctores;
+    }
+    public static function guardar(Request $r){
+
+        $cita = $r['cita'];
+        $cita_fecha = DB::table('citas')->select('*')
+        ->where('fecha', $cita['fecha'])
+        ->where('equipo', $cita['sala'])
+        ->where('hora_inicio', $cita['hora'])
+        ->update([ 'se_presento' => $cita['se_presento'], 'ci_doctor' => $cita['ci_doctor']]);
+
+        Cache::forget('citas' . $cita['fecha']);
+        return 'ok';
     }
 }

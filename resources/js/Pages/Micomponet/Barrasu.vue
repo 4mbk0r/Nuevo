@@ -366,7 +366,7 @@
     <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
         <v-card color="grey lighten-4" min-width="350px" flat>
             <v-toolbar :color="selectedEvent.color" dark>
-                <v-btn icon>
+                <v-btn icon @click="guardar_se_presento" >
                     <v-icon>mdi-content-save</v-icon>
                 </v-btn>
                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
@@ -388,12 +388,12 @@
                 </label><br>
                 <label>
                     Se presento:
-                    <v-select v-model="seprento" :items="opsepresento" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
+                    <v-select v-model="selectedEvent.se_presento" :items="opsepresento" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
                 </label><br>
 
-                <label v-if="seprento=='Si'">
+                <label v-if="selectedEvent.se_presento=='Si'">
                     Fue Atendido:
-                    <v-select item-text="nombre" item-value="ci" :items="doctores" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
+                    <v-select v-model="selectedEvent.ci_doctor" item-text="nombre" item-value="ci" :items="doctores" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
                 </label>
             </v-card-text>
             <v-card-actions>
@@ -625,6 +625,16 @@ export default {
         this.initialize()
     },
     methods: {
+        async guardar_se_presento(){
+            var res = await axios({
+                    method: 'post',
+                    url: 'api/guardar_datos',
+                    data: {
+                        cita: this.selectedEvent,
+                    }
+                }).then();
+            this.traerdatos();
+        }, 
         cerrar_editar_cita(){
             this.v_editar_agendar=false
             this.$refs.form_cita_edit.reset()
@@ -725,8 +735,6 @@ export default {
         }) {
             const open = () => {
                 this.selectedEvent = event
-                this.se_presento = ""
-                this.seprento = event.seprento
                 this.selectedElement = nativeEvent.target
                 requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
             }
@@ -1049,6 +1057,8 @@ export default {
                     observacion: element.observacion,
                     tipo_cita: element.tipo_cita,
                     lugar: element.lugar,
+                    se_presento: element.se_presento,
+                    ci_doctor: element.ci_doctor,
                     start: first,
                     end: second,
                     color: this.colors[Math.floor(Math.random() * this.colors.length)],
