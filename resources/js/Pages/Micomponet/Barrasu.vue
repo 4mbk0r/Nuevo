@@ -124,7 +124,7 @@
                             </v-row>
                             <v-row no-gutters>
                                 <v-col cols="12" md="4">
-                                    <v-text-field v-model="fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac" :rules="[ rulesFecha_nac ]" type="date" label="Fecha de nacimiento" pa-0 solo>
+                                    <v-text-field v-model="fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac"  type="date" label="Fecha de nacimiento" pa-0 solo>
                                     </v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="4">
