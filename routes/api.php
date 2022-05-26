@@ -66,6 +66,10 @@ Route::post('/imprimir', function (Request $request) {
 });
 
 
-Route::middleware('auth:sanctum')->Route::get('/doctor', function (Request $request) {
+Route::get('/doctor', function (Request $request) {
     return DoctorController::listadoctor();
+});
+
+Route::post('/eliminar_cita', function (Request $request) {
+    return CitaController::eliminar_cita($request);
 });

@@ -39,18 +39,19 @@
             <v-divider></v-divider>
 
             <v-list nav dense>
-                <v-list-item link class="white--text">
-                    <v-list-item-icon>
-                        <v-icon style="color: white;">mdi-file-document-edit</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Agendar</v-list-item-title>
-                </v-list-item>
-                <v-list-item link class="white--text">
-                    <v-list-item-icon>
-                        <v-icon style="color: white;">mdi-account-multiple</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Usuarios</v-list-item-title>
-                </v-list-item>
+                
+                    <jet-responsive-nav-link :href="route('inicio')" :active="route().current('inicio')">
+
+                        <v-icon >mdi-file-document-edit</v-icon>
+                        <a :href="route('inicio')">Agendar</a>
+                    </jet-responsive-nav-link>
+
+                    <jet-responsive-nav-link :href="route('administrar.index')" :active="route().current('administrar.index')">
+
+                        <v-icon >mdi-account-multiple</v-icon>
+                        <a :href="route('registro')">Usuario</a>
+                    </jet-responsive-nav-link>
+
             </v-list>
         </v-navigation-drawer>
 

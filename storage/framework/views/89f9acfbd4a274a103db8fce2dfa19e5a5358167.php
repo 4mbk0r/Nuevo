@@ -17,7 +17,7 @@
         <?php echo app('Tightenco\Ziggy\BladeRouteGenerator')->generate(); ?>
         <script src="<?php echo e(mix('js/app.js')); ?>" defer></script>
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased todo">
         <div id="app" data-page="<?php echo e(json_encode($page)); ?>"></div>
     </body>
 </html>

@@ -208,7 +208,7 @@
                             </template>
                         </v-btn>
                         <div id="main" class="grid grid-cols-3 gap-1 justify-evenly">
-                            <v-text-field v-model="fecha_cita_actual" :rules="nombreRules" :min="fechacitaMin" @change="change_fecha" type="date" label="Fecha de Cita">
+                            <v-text-field v-model="fecha_cita_actual" :rules="nombreRules" :min="fechacitaMin" @change="change_fecha2" type="date" label="Fecha de Cita">
                             </v-text-field>
                             <div>
                                 <v-select v-model="equipo_actual" :items="equipos_actuales" :rules="selectRules" @change="cambioequipo" color="purple darken-3" label="Equipo">
@@ -234,6 +234,64 @@
                     </v-btn>
                     <v-btn type="submit" color="primary" class="mr-4" @click="imprimir_directo" @click.stop="v_agendar=false">
                         Boleta
+                    </v-btn>
+                </v-form>
+            </v-container>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="v_editar_agendar" fullscreen hide-overlay transition="dialog-bottom-transition">
+        <v-toolbar dark color="#1CA698">
+            <v-btn icon dark @click="cerrar_editar_cita">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+            <v-toolbar-title>v_editar_agendar</v-toolbar-title>
+            <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-card>
+            <v-container>
+
+                <v-form ref="form_cita_edit" @submit.prevent="">
+                    <div class="text-center">
+                        <div id="main" class="grid grid-cols-3 gap-1 justify-evenly">
+                            <div>
+                                <v-text-field v-model="editar.name" label="Nombre">
+                                </v-text-field>
+                            </div>
+                            <div>
+                                <v-text-field v-model="editar.ap_paterno" label="Apellido Paterno">
+                                </v-text-field>
+                            </div>
+                            <div>
+                                <v-text-field v-model="editar.ap_materno" label="Apellido Materno">
+                                </v-text-field>
+                            </div>
+                        </div>
+                        <div>
+                            <v-text-field v-model="editar.fecha" :rules="nombreRules" :min="fechacitaMin" @change="change_fecha(editar)" type="date" label="Fecha de Cita">
+                            </v-text-field>
+                        </div>
+                        <div>
+                            <v-select v-model="editar.sala" :items="equipos_actuales" :rules="selectRules" @change="cambioequipos(editar)" color="purple darken-3" label="Equipo">
+                            </v-select>
+                        </div>
+                        <div>
+                            <v-select v-model="editar.hora" :items="tiempos_actuales" :rules="selectRules" color="purple darken-3" label="Hora de inicio">
+                            </v-select>
+                        </div>
+                        <div>
+                            <v-select v-model="editar.tipo_cita" :items="tipo_cita" color="purple darken-3" label="Tipo de cita">
+                            </v-select>
+                            <v-select v-model="editar.lugar" :items="ttlugares" color="purple darken-3" label="Lugar">
+                            </v-select>
+                            <v-text-field v-model="editar.observacion" type="text" label="Observacion">
+                            </v-text-field>
+                        </div>
+                    </div>
+                    <v-btn type="submit" color="primary" class="mr-4" @click="guardar_cita_edit" @click.stop="v_agendar=false">
+                        Guardar
+                    </v-btn>
+                    <v-btn type="submit" color="primary" class="mr-4" @click="eliminar_cita" >
+                        Eliminar
                     </v-btn>
                 </v-form>
             </v-container>
@@ -313,6 +371,9 @@
                 </v-btn>
                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                 <v-spacer></v-spacer>
+                <v-btn icon @click="editar_cita">
+                    <v-icon>mdi-table-edit</v-icon>
+                </v-btn>
             </v-toolbar>
             <v-card-text>
                 <span v-html="selectedEvent.details"></span>
@@ -450,6 +511,7 @@ export default {
         t_equipo: null,
         //ventana modal 
         selectedEvent: {},
+        selecevent: {},
         selectedElement: null,
         selectedOpen: false,
         v_carga: false,
@@ -553,6 +615,8 @@ export default {
         ],
         tlugar: "CALLE MUÑOZ CORNEJO NRO 2702 - ESQUINA MENDEZ ARCOS - SOPOCACHI",
         v_imprimir: false,
+        v_editar_agendar: false,
+        editar: {},
     }),
     mounted() {
         this.$refs.calendar.checkChange()
@@ -561,12 +625,35 @@ export default {
         this.initialize()
     },
     methods: {
+        cerrar_editar_cita(){
+            this.v_editar_agendar=false
+            this.$refs.form_cita_edit.reset()
+        },
+        async editar_cita() {
+
+            this.tiempos_actuales = [];
+            console.log("este es un evento")
+            console.log(this.selectedEvent)
+            this.editar = this.selectedEvent
+            this.selecevent= {
+                fecha: this.selectedEvent.fecha,
+                sala: this.selectedEvent.sala,
+                hora: this.selectedEvent.hora
+            }
+            await this.change_fecha(this.editar);
+            this.v_editar_agendar = true;
+            
+            this.tiempos_actuales = this.lista_tiempos['' + this.editar.sala];
+            //this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
+            
+            this.tiempos_actuales.push(this.editar.hora);
+        },
         cerrar_agendar() {
             this.v_agendar = false;
         },
         ventana_agendar() {
             this.v_agendar = true;
-            this.change_fecha();
+            this.change_fecha2();
         },
         limipiar_form() {
             this.ci = "";
@@ -618,7 +705,7 @@ export default {
 
             let printContents = document.getElementById('print').innerHTML;
             let w = window.open();
-            w.document.write('<style>.titulo{font-family:Helvetica,Arial,sans-serif;font-weight:900;font-size:14px}.titulo2{font-family:Arial,sans-serif;font-weight:700;font-size:12px}.titulo3{font-size:9px;font-weight:900}.aling{align-items:center;align-content:center;text-align:center;padding:5px}.center_columna{justify-content:center;align-content:center;display:flex;justify-content:center;align-items:center;border:3px solid gray}.aling{align-items:center;align-content:center;text-align:center;padding:0,0,0,0;font-size:10px}.alinear_elemento{justify-content:center;align-items:center;padding:5px;border-radius:5px;border:2px solid gray}.total_ancho{width:100%;background-color:#1ca698}.box{border-radius:10px;border:2px solid gray;justify-content:center;align-items:center;align-content:center;align-self:center;height:40px;align-items:center;align-content:center;text-align:center;align-content:center;padding:2px;justify-content:center}.wrapper{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(10px,50px);justify-content:center;text-align:center;padding:0,0,0,0;font-size:10px;border:0 solid gray;align-content:center;text-align:center}.one{grid-column:1/4;grid-row:1;align-content:center;height:30px}.two{grid-column:1;grid-row:2}.three{grid-column:2;grid-row:2}.four{grid-column:3;grid-row:2}.five{grid-column:1/4;grid-row:3}.label{display:flex;flex-wrap:wrap;align-content:center;justify-content:center}.grid-container{display:grid;grid-template-columns:auto auto auto;padding:1px;font-size:10px}.grid-item{background-color:rgba(255,255,255,0.8);border:1px solid rgba(0,0,0,0.8);padding:1px;font-size:10px;text-align:center}.grid-nombre{background-color:rgba(255,255,255,0.8);border:1px solid rgba(0,0,0,0.8);font-size:10px;text-align:center}.texto_nombre{padding:0}.texto_mediano{font-size:10px}.observaciones{width:max-content}</STYLE>');
+            w.document.write('<style>.titulo{font-family:Helvetica,Arial,sans-serif;font-weight:100%;font-size:14px}.titulo2{font-family:Arial,sans-serif;font-weight:700;font-size:12px}.titulo3{font-size:9px;font-weight:900}.aling{align-items:center;align-content:center;text-align:center;padding:5px}.center_columna{justify-content:center;align-content:center;display:flex;justify-content:center;align-items:center;border:3px solid gray}.aling{align-items:center;align-content:center;text-align:center;padding:0,0,0,0;font-size:10px}.alinear_elemento{justify-content:center;align-items:center;padding:5px;border-radius:5px;border:2px solid gray}.total_ancho{width:100%;background-color:#1ca698}.box{border-radius:10px;border:2px solid gray;justify-content:center;align-items:center;align-content:center;align-self:center;height:90px;align-items:center;align-content:center;text-align:center;align-content:center;padding:1px;justify-content:center;word-break:break-all}.wrapper{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(10px,90px);justify-content:center;text-align:center;padding:0,0,0,0;font-size:20px;border:0 solid gray;align-content:center;text-align:center;word-break:break-all}.one{grid-column:1/4;grid-row:1;align-content:center;height:30px}.two{grid-column:1;grid-row:2}.three{grid-column:2;grid-row:2}.four{grid-column:3;grid-row:2;font-size:14px}.five{grid-column:1/4;grid-row:3}.label{display:flex;flex-wrap:wrap;align-content:center;justify-content:center}.grid-container{display:grid;grid-template-columns:auto auto auto;padding:1px;font-size:20px}.grid-item{background-color:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.8);padding:1px;font-size:20px;text-align:center}.grid-nombre{background-color:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.8);font-size:20px;text-align:center}.texto_nombre{padding:0}.texto_mediano{font-size:16px}.observaciones{width:max-content}</STYLE>');
 
             w.document.write(printContents);
 
@@ -654,6 +741,65 @@ export default {
             nativeEvent.stopPropagation()
         },
         limipiar_formcita() {
+
+        },
+         async eliminar_cita() {
+            console.log("----")
+            console.log(this.selecevent)
+            var res = await axios({
+                    method: 'post',
+                    url: 'api/eliminar_cita',
+                    data: {
+                        cita: this.selecevent,
+                    }
+                }).then();
+            console.log(res)
+            this.v_editar_agendar=false
+            this.traerdatos();
+        },
+        async eliminar_cita2() {
+
+            var res = await axios({
+                    method: 'post',
+                    url: 'api/eliminar_cita',
+                    data: {
+                        cita: this.selectedEvent,
+                    }
+                }).then();
+        },
+        async guardar_cita_edit() {
+            
+            let hof = moment('2017-08-30T' + this.editar.hora).add(1, "h");
+            if (this.$refs.form_cita_edit.validate()) {
+                var cita = {
+                    fecha: this.editar.fecha,
+                    hora_inicio: this.editar.hora,
+                    equipo: this.editar.sala,
+                    hora_final: hof.format("HH:mm:ss"),
+                    tipo_cita: this.editar.tipo_cita,
+                    se_presento: '',
+                    observacion: this.editar.observacion,
+                    lugar: this.editar.lugar,
+                    ci: this.editar.id,
+                    ci_doctor: '-1',
+
+                }
+                console.log(".....")
+                console.log(this.editar)
+                var res = await axios({
+                    method: 'post',
+                    url: 'api/dar_cita',
+                    data: {
+                        cita: cita,
+                    }
+                }).then();
+                console.log(res['data']);
+                
+                this.v_editar_agendar=false;
+                this.$refs.form_cita_edit.reset();
+                var esp = await this.eliminar_cita()
+                
+            }
 
         },
         async guardar_cita() {
@@ -753,7 +899,11 @@ export default {
             this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
             this.t_equipo = this.tiempos_actuales[0];
         },
-        async change_fecha() {
+        cambioequipos() {
+            this.tiempos_actuales = this.lista_tiempos['' + this.editar.sala];
+            this.editar.hora = this.tiempos_actuales[0];
+        }, 
+        async change_fecha2() {
             var a = await axios.post('api/citas_actuales/' + this.fecha_cita_actual).then();
             console.log(a['data']);
             var array = a['data']
@@ -778,6 +928,34 @@ export default {
             }
             this.equipo_actual = p + 1;
             this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
+            this.editar.sala = w
+        },
+        async change_fecha(evento) {
+            var a = await axios.post('api/citas_actuales/' + evento.fecha).then();
+            //console.log(a['data']);
+            var array = a['data']
+            this.equipos_actuales = [];
+            var primera = true;
+            var p, w = "";
+            this.lista_tiempos = {};
+            for (let i = 0; i < array.length; i++) {
+                if (Object.keys(array[i]).length >= 1) {
+                    this.equipos_actuales.push(i + 1);
+                    var aux = [];
+                    for (const key in array[i]) {
+                        aux.push(array[i][key]);
+                        if (primera) {
+                            p = i,
+                                w = array[i][key]
+                            primera = false;
+                        }
+                    }
+                    this.lista_tiempos['' + (i + 1)] = aux;
+                }
+            }
+            this.equipo_actual = p + 1;
+            this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
+            console.log(this.tiempos_actuales)
             this.t_equipo = w
         },
         async Buscarfecha() {
