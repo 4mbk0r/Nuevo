@@ -71,7 +71,7 @@
                     <v-container ma-0 pa-0>
                         <v-row no-gutters>
                             <v-col cols="10" md="6">
-                                <v-text-field v-model="ci" type="number" pa-0 solo @change="prueba" label="Carnet" required></v-text-field>
+                                <v-text-field v-model="ci" type="text" pa-0 solo @change="prueba" label="Carnet" required></v-text-field>
                             </v-col>
 
                             <v-col cols="10" md="6">
@@ -124,7 +124,7 @@
                             </v-row>
                             <v-row no-gutters>
                                 <v-col cols="12" md="4">
-                                    <v-text-field v-model="fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac"  type="date" label="Fecha de nacimiento" pa-0 solo>
+                                    <v-text-field v-model="fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac" type="date" label="Fecha de nacimiento" pa-0 solo>
                                     </v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="4">
@@ -169,6 +169,15 @@
                         </v-row>
                         <div v-if="Historia">
                             <v-data-table :headers="headers" :footer-props="{itemsPerPageText: 'Pacientes por pagina'}" :items="desserts" :sort-desc.sync="sortDesc" sort-by="fecha" class="elevation-1 cyan lighten-3">
+                                <template v-slot:item.actions="{ item }">
+                                    <v-icon small class="mr-2" @click="editItem(item)">
+                                        mdi-pencil
+                                    </v-icon>
+                                    <v-icon small @click="deleteItem(item)">
+                                        mdi-delete
+                                    </v-icon>
+                                </template>
+
                             </v-data-table>
                         </div>
                     </v-container>
@@ -271,7 +280,7 @@
                             </v-text-field>
                         </div>
                         <div>
-                            <v-select v-model="editar.sala" :items="equipos_actuales" :rules="selectRules" @change="cambioequipos(editar)" color="purple darken-3" label="Equipo">
+                            <v-select v-model="editar.equipo" :items="equipos_actuales" :rules="selectRules" @change="cambioequipos(editar)" color="purple darken-3" label="Equipo">
                             </v-select>
                         </div>
                         <div>
@@ -290,7 +299,7 @@
                     <v-btn type="submit" color="primary" class="mr-4" @click="guardar_cita_edit" @click.stop="v_agendar=false">
                         Guardar
                     </v-btn>
-                    <v-btn type="submit" color="primary" class="mr-4" @click="eliminar_cita" >
+                    <v-btn type="submit" color="primary" class="mr-4" @click="eliminar_cita">
                         Eliminar
                     </v-btn>
                 </v-form>
@@ -366,7 +375,7 @@
     <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
         <v-card color="grey lighten-4" min-width="350px" flat>
             <v-toolbar :color="selectedEvent.color" dark>
-                <v-btn icon @click="guardar_se_presento" >
+                <v-btn icon @click="guardar_se_presento">
                     <v-icon>mdi-content-save</v-icon>
                 </v-btn>
                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
@@ -447,6 +456,11 @@ export default {
             {
                 text: 'Observacion',
                 value: 'observacion'
+            },
+            {
+                text: 'Accion',
+                value: 'actions',
+                sortable: false
             },
         ],
         focus: '',
@@ -625,19 +639,53 @@ export default {
         this.initialize()
     },
     methods: {
-        async guardar_se_presento(){
+        async editItem(item) {
+            console.log(item);
+            this.v_editar_agendar = true
+            this.editar = item;
+            
+            Object.assign(this.editar, {
+                hora: this.editar.hora_inicio
+            });
+
+            this.tiempos_actuales = [];
+            console.log("este es un evento")
+            console.log(this.selectedEvent)
+            this.selectedEvent = item;
+            this.selecevent = {
+                fecha: this.selectedEvent.fecha,
+                equipo: this.selectedEvent.equipo,
+                hora: this.selectedEvent.hora_inicio
+            }
+            await this.change_fecha(this.editar);
+            this.v_editar_agendar = true;
+            this.tiempos_actuales = this.lista_tiempos['' + this.editar.equipo];
+            //this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
+            this.tiempos_actuales.push(this.editar.hora_inicio);
+        },
+        async deleteItem(item) {
+            await this.eliminar_cita2(item);
+            var b = await axios.post('api/datos_citas/' + item.ci).then();
+            this.desserts = b['data'];
+            console.log(b);
+            if (this.desserts.length == 0) {
+                this.desserts = [];
+            }
+
+        },
+        async guardar_se_presento() {
             var res = await axios({
-                    method: 'post',
-                    url: 'api/guardar_datos',
-                    data: {
-                        cita: this.selectedEvent,
-                    }
-                }).then();
+                method: 'post',
+                url: 'api/guardar_datos',
+                data: {
+                    cita: this.selectedEvent,
+                }
+            }).then();
             this.traerdatos();
-        }, 
-        cerrar_editar_cita(){
-            this.v_editar_agendar=false
-            this.$refs.form_cita_edit.reset()
+
+        },
+        cerrar_editar_cita() {
+            this.v_editar_agendar = false
         },
         async editar_cita() {
 
@@ -645,17 +693,17 @@ export default {
             console.log("este es un evento")
             console.log(this.selectedEvent)
             this.editar = this.selectedEvent
-            this.selecevent= {
+            this.selecevent = {
                 fecha: this.selectedEvent.fecha,
-                sala: this.selectedEvent.sala,
+                equipo: this.selectedEvent.equipo,
                 hora: this.selectedEvent.hora
             }
             await this.change_fecha(this.editar);
             this.v_editar_agendar = true;
-            
-            this.tiempos_actuales = this.lista_tiempos['' + this.editar.sala];
+
+            this.tiempos_actuales = this.lista_tiempos['' + this.editar.equipo];
             //this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
-            
+
             this.tiempos_actuales.push(this.editar.hora);
         },
         cerrar_agendar() {
@@ -751,38 +799,38 @@ export default {
         limipiar_formcita() {
 
         },
-         async eliminar_cita() {
+        async eliminar_cita() {
             console.log("----")
             console.log(this.selecevent)
             var res = await axios({
-                    method: 'post',
-                    url: 'api/eliminar_cita',
-                    data: {
-                        cita: this.selecevent,
-                    }
-                }).then();
+                method: 'post',
+                url: 'api/eliminar_cita',
+                data: {
+                    cita: this.selecevent,
+                }
+            }).then();
             console.log(res)
-            this.v_editar_agendar=false
+            this.v_editar_agendar = false
             this.traerdatos();
         },
         async eliminar_cita2() {
 
             var res = await axios({
-                    method: 'post',
-                    url: 'api/eliminar_cita',
-                    data: {
-                        cita: this.selectedEvent,
-                    }
-                }).then();
+                method: 'post',
+                url: 'api/eliminar_cita2',
+                data: {
+                    cita: this.selectedEvent,
+                }
+            }).then();
         },
         async guardar_cita_edit() {
-            
+
             let hof = moment('2017-08-30T' + this.editar.hora).add(1, "h");
             if (this.$refs.form_cita_edit.validate()) {
                 var cita = {
                     fecha: this.editar.fecha,
                     hora_inicio: this.editar.hora,
-                    equipo: this.editar.sala,
+                    equipo: this.edita.equipo,
                     hora_final: hof.format("HH:mm:ss"),
                     tipo_cita: this.editar.tipo_cita,
                     se_presento: '',
@@ -802,11 +850,11 @@ export default {
                     }
                 }).then();
                 console.log(res['data']);
-                
-                this.v_editar_agendar=false;
+
+                this.v_editar_agendar = false;
                 this.$refs.form_cita_edit.reset();
                 var esp = await this.eliminar_cita()
-                
+
             }
 
         },
@@ -908,9 +956,9 @@ export default {
             this.t_equipo = this.tiempos_actuales[0];
         },
         cambioequipos() {
-            this.tiempos_actuales = this.lista_tiempos['' + this.editar.sala];
+            this.tiempos_actuales = this.lista_tiempos['' + this.editar.equipo];
             this.editar.hora = this.tiempos_actuales[0];
-        }, 
+        },
         async change_fecha2() {
             var a = await axios.post('api/citas_actuales/' + this.fecha_cita_actual).then();
             console.log(a['data']);
@@ -936,7 +984,7 @@ export default {
             }
             this.equipo_actual = p + 1;
             this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
-            this.editar.sala = w
+            this.editar.equipo = w
         },
         async change_fecha(evento) {
             var a = await axios.post('api/citas_actuales/' + evento.fecha).then();
@@ -1053,7 +1101,7 @@ export default {
                     ap_materno: element.ap_materno,
                     ap_paterno: element.ap_paterno,
                     hora: element.hora_inicio,
-                    sala: element.equipo,
+                    equipo: element.equipo,
                     observacion: element.observacion,
                     tipo_cita: element.tipo_cita,
                     lugar: element.lugar,

@@ -275,6 +275,17 @@ class CitaController extends Controller
         Cache::forget('citas' . $cita['fecha']);
         return 'ok';
     }
+    public static function eliminar_cita2(Request $request){
+        
+        $cita = $request['cita'];
+        $cita_fecha = DB::table('citas')->select('*')
+        ->where('fecha', $cita['fecha'])
+        ->where('equipo', $cita['equipo'])
+        ->where('hora_inicio', $cita['hora'])
+        ->delete();
+        Cache::forget('citas' . $cita['fecha']);
+        return 'ok';
+    }
     /**
      * Update the specified resource in storage.
      *

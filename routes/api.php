@@ -74,6 +74,10 @@ Route::post('/eliminar_cita', function (Request $request) {
     return CitaController::eliminar_cita($request);
 });
 
+Route::post('/eliminar_cita2', function (Request $request) {
+    return CitaController::eliminar_cita($request);
+});
+
 Route::post('/guardar_datos', function (Request $request) {
     return DoctorController::guardar($request);
 });
