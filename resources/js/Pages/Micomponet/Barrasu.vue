@@ -1,206 +1,207 @@
 <template>
-<div>
-    <v-container>
-        <div v-if="msg.fecha_validacion" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <strong class="font-bold">{{msg.fecha_validacion}}</strong>
-        </div>
-        <v-row>
-            <v-col>
-                <v-sheet height="64">
-                    <v-toolbar>
-                        <v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">
-                            Hoy
-                        </v-btn>
-                        <!--onkeydown="return false"-->
-                        <!--<v-text-field v-model="fecha_uso"  :min="fechacitaMin" :rules="[ fechaValida ]" type="date" label="Fecha De Cita" >
+<v-app>
+    <div>
+        <v-container>
+            <div v-if="msg.fecha_validacion" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">{{msg.fecha_validacion}}</strong>
+            </div>
+            <v-row>
+                <v-col>
+                    <v-sheet height="64">
+                        <v-toolbar>
+                            <v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">
+                                Hoy
+                            </v-btn>
+                            <!--onkeydown="return false"-->
+                            <!--<v-text-field v-model="fecha_uso"  :min="fechacitaMin" :rules="[ fechaValida ]" type="date" label="Fecha De Cita" >
                         </v-text-field>-->
-                        <input id="txtDate" type="date" refs="seldate" onkeydown="return false" v-model="fecha_hoy" @change="formatDate" />
-                        <v-btn fab text small color="grey darken-2" @click="prev">
-                            <v-icon small>
-                                mdi-chevron-left
-                            </v-icon>
-                        </v-btn>
-                        <v-btn fab text small color="grey darken-2" @click="next">
-                            <v-icon small>
-                                mdi-chevron-right
-                            </v-icon>
-                        </v-btn>
-                        <v-toolbar-title v-if="$refs.calendar">
-                            <!--{{ $refs.calendar.title }}-->
-                            {{ textoDate(fecha_hoy) }}
-                        </v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <button type="button" @click="ventana_modal" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Agregar</button>
+                            <input id="txtDate" type="date" refs="seldate" onkeydown="return false" v-model="fecha_hoy" @change="formatDate" />
+                            <v-btn fab text small color="grey darken-2" @click="prev">
+                                <v-icon small>
+                                    mdi-chevron-left
+                                </v-icon>
+                            </v-btn>
+                            <v-btn fab text small color="grey darken-2" @click="next">
+                                <v-icon small>
+                                    mdi-chevron-right
+                                </v-icon>
+                            </v-btn>
+                            <v-toolbar-title v-if="$refs.calendar">
+                                <!--{{ $refs.calendar.title }}-->
+                                {{ textoDate(fecha_hoy) }}
+                            </v-toolbar-title>
+                            <v-spacer></v-spacer>
+                            <button type="button" @click="ventana_modal" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Agregar</button>
 
-                    </v-toolbar>
+                        </v-toolbar>
 
-                </v-sheet>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <v-sheet height="500">
-                    <!--@change=""-->
-                    <v-calendar ref="calendar" v-model="focus" color="primary" type="category" category-show-all :categories="categories" :events="events" :event-color="getEventColor" @click:event="showEvent" :first-interval=7 :interval-minutes=60 :interval-count=12></v-calendar>
-                </v-sheet>
-            </v-col>
-        </v-row>
-    </v-container>
-    <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
-        <v-toolbar dark color="#1CA698">
-            <v-btn icon dark @click="cerrar_dialog">
-                <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>Datos Personales</v-toolbar-title>
-            <v-spacer></v-spacer>
-        </v-toolbar>
-        <buscar></buscar>
-        <v-card color="#1CA698">
+                    </v-sheet>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-sheet height="500">
+                        <!--@change=""-->
+                        <v-calendar ref="calendar" v-model="focus" color="primary" type="category" category-show-all :categories="categories" :events="events" :event-color="getEventColor" @click:event="showEvent" :first-interval=7 :interval-minutes=60 :interval-count=12></v-calendar>
+                    </v-sheet>
+                </v-col>
+            </v-row>
+        </v-container>
+        <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+            <v-toolbar dark color="#1CA698">
+                <v-btn icon dark @click="cerrar_dialog">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Datos Personales</v-toolbar-title>
+                <v-spacer></v-spacer>
+            </v-toolbar>
+            <buscar></buscar>
+            <v-card color="#1CA698">
 
-            <v-container>
+                <v-container>
 
-                <v-form ref="formcita" @submit.prevent="addEvent">
-                    <v-alert v-if="msg_usuario=='Nuevo'" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                        <strong class="font-bold">El usuario es {{msg_usuario}}</strong>
-                    </v-alert>
+                    <v-form ref="formcita" @submit.prevent="addEvent">
+                        <v-alert v-if="msg_usuario=='Nuevo'" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                            <strong class="font-bold">El usuario es {{msg_usuario}}</strong>
+                        </v-alert>
 
-                    <v-alert v-if="msg_usuario=='Antiguo'" dense border="left" type="warning">
-                        <strong class="font-bold">El usuario es {{msg_usuario}}</strong>
-                    </v-alert>
+                        <v-alert v-if="msg_usuario=='Antiguo'" dense border="left" type="warning">
+                            <strong class="font-bold">El usuario es {{msg_usuario}}</strong>
+                        </v-alert>
 
-                    <v-container ma-0 pa-0>
-                        <v-row no-gutters>
-                            <v-col cols="10" md="6">
-                                <v-text-field v-model="ci" type="text" pa-0 solo @change="prueba" label="Carnet" required></v-text-field>
-                            </v-col>
-
-                            <v-col cols="10" md="6">
-                                <v-select v-model="sdeparamento" pa-0 solo :items="departamentos" :rules="selectRules" label="Expedido">
-                                </v-select>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-
-                    <v-container v-if="datos_usuario" ma-0 pa-0>
-                        <v-row outlined>
-                            <v-col md="auto" sm="auto" xs="auto" align-center justify-center>
-                                <v-btn icon color="#f2f2f2" @click="informacion= !informacion">
-                                    <v-icon v-if="informacion">
-                                        mdi-minus
-                                    </v-icon>
-                                    <v-icon v-else>
-                                        mdi-plus
-                                    </v-icon>
-
-                                </v-btn>
-                                <strong class="white--text">Informacion Del Usuario</strong>
-                            </v-col>
-                        </v-row>
-                        <v-container v-if="informacion" ma-0 pa-0>
-                            <v-row no-gutters>
-                                <v-col cols="12" md="4">
-                                    <v-text-field v-model="nombre" :rules="nombreRules" type="text" pa-0 solo label="Nombre">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12" md="4">
-                                    <v-text-field v-model="paterno" :rules="nombreRules" type="text" pa-0 solo label="Apellido Paterno">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12" md="4">
-                                    <v-text-field v-model="materno" :rules="nombreRules" type="text" pa-0 solo label="Apellido Materno">
-                                    </v-text-field>
-                                </v-col>
-                            </v-row>
+                        <v-container ma-0 pa-0>
                             <v-row no-gutters>
                                 <v-col cols="10" md="6">
-                                    <v-text-field v-model="correo" type="email" label="Correo" pa-0 solo>
-                                    </v-text-field>
+                                    <v-text-field v-model="ci" type="text" pa-0 solo @change="prueba" label="Carnet" required></v-text-field>
                                 </v-col>
 
-                                <v-col cols="10" md="6" pa-0 solo>
-                                    <v-text-field v-model="numero" type="text" label="Numero Celular" pa-0 solo>
-                                    </v-text-field>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters>
-                                <v-col cols="12" md="4">
-                                    <v-text-field v-model="fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac" type="date" label="Fecha de nacimiento" pa-0 solo>
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12" md="4">
-                                    <v-text-field v-model="direccion" type="text" label="Direccion" pa-0 solo>
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12" md="4">
-                                    <v-select v-model="ssexo" :items="sexo" color="purple darken-3" label="Sexo" pa-0 solo>
+                                <v-col cols="10" md="6">
+                                    <v-select v-model="sdeparamento" pa-0 solo :items="departamentos" :rules="selectRules" label="Expedido">
                                     </v-select>
                                 </v-col>
                             </v-row>
                         </v-container>
-                        <v-row align="center" justify="center">
-                            <v-col>
-                                <v-btn type="submit" color="primary" class="mr-4" @click="Guardar_datos">
-                                    Guardar Datos
-                                </v-btn>
-                            </v-col>
-                            <v-col>
-                                <v-btn color="primary" class="mr-4" @click="ventana_agendar">
-                                    Dar cita
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-                        <v-spacer>
-                        </v-spacer>
 
-                    </v-container>
-                    <v-container v-if="desserts.length>=1">
-                        <v-row outlined>
-                            <v-col md="auto" sm="auto" xs="auto" align-center justify-center>
-                                <v-btn icon color="#f2f2f2" @click="Historia= !Historia">
-                                    <v-icon v-if="Historia">
-                                        mdi-minus
-                                    </v-icon>
-                                    <v-icon v-else>
-                                        mdi-plus
-                                    </v-icon>
-                                </v-btn>
-                                <strong class="white--text">Historia de Usuario</strong>
-                            </v-col>
-                        </v-row>
-                        <div v-if="Historia">
-                            <v-data-table :headers="headers" :footer-props="{itemsPerPageText: 'Pacientes por pagina'}" :items="desserts" :sort-desc.sync="sortDesc" sort-by="fecha" class="elevation-1 cyan lighten-3">
-                                <template v-slot:item.actions="{ item }">
-                                    <v-icon small class="mr-2" @click="editItem(item)">
-                                        mdi-pencil
-                                    </v-icon>
-                                    <v-icon small @click="deleteItem(item)">
-                                        mdi-delete
-                                    </v-icon>
-                                </template>
+                        <v-container v-if="datos_usuario" ma-0 pa-0>
+                            <v-row outlined>
+                                <v-col md="auto" sm="auto" xs="auto" align-center justify-center>
+                                    <v-btn icon color="#f2f2f2" @click="informacion= !informacion">
+                                        <v-icon v-if="informacion">
+                                            mdi-minus
+                                        </v-icon>
+                                        <v-icon v-else>
+                                            mdi-plus
+                                        </v-icon>
 
-                            </v-data-table>
-                        </div>
-                    </v-container>
-                </v-form>
-            </v-container>
-        </v-card>
-    </v-dialog>
+                                    </v-btn>
+                                    <strong class="white--text">Informacion Del Usuario</strong>
+                                </v-col>
+                            </v-row>
+                            <v-container v-if="informacion" ma-0 pa-0>
+                                <v-row no-gutters>
+                                    <v-col cols="12" md="4">
+                                        <v-text-field v-model="nombre" :rules="nombreRules" type="text" pa-0 solo label="Nombre">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4">
+                                        <v-text-field v-model="paterno" :rules="nombreRules" type="text" pa-0 solo label="Apellido Paterno">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4">
+                                        <v-text-field v-model="materno" :rules="nombreRules" type="text" pa-0 solo label="Apellido Materno">
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col cols="10" md="6">
+                                        <v-text-field v-model="correo" type="email" label="Correo" pa-0 solo>
+                                        </v-text-field>
+                                    </v-col>
 
-    <v-dialog v-model="v_agendar" fullscreen hide-overlay transition="dialog-bottom-transition">
-        <v-toolbar dark color="#1CA698">
-            <v-btn icon dark @click="cerrar_agendar">
-                <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>AGENDAR</v-toolbar-title>
-            <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-card>
-            <v-container>
+                                    <v-col cols="10" md="6" pa-0 solo>
+                                        <v-text-field v-model="numero" type="text" label="Numero Celular" pa-0 solo>
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col cols="12" md="4">
+                                        <v-text-field v-model="fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac" type="date" label="Fecha de nacimiento" pa-0 solo>
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4">
+                                        <v-text-field v-model="direccion" type="text" label="Direccion" pa-0 solo>
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4">
+                                        <v-select v-model="ssexo" :items="sexo" color="purple darken-3" label="Sexo" pa-0 solo>
+                                        </v-select>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                            <v-row align="center" justify="center">
+                                <v-col>
+                                    <v-btn type="submit" color="primary" class="mr-4" @click="Guardar_datos">
+                                        Guardar Datos
+                                    </v-btn>
+                                </v-col>
+                                <v-col>
+                                    <v-btn color="primary" class="mr-4" @click="ventana_agendar">
+                                        Dar cita
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-spacer>
+                            </v-spacer>
 
-                <v-form ref="form_cita" @submit.prevent="">
+                        </v-container>
+                        <v-container v-if="desserts.length>=1">
+                            <v-row outlined>
+                                <v-col md="auto" sm="auto" xs="auto" align-center justify-center>
+                                    <v-btn icon color="#f2f2f2" @click="Historia= !Historia">
+                                        <v-icon v-if="Historia">
+                                            mdi-minus
+                                        </v-icon>
+                                        <v-icon v-else>
+                                            mdi-plus
+                                        </v-icon>
+                                    </v-btn>
+                                    <strong class="white--text">Historia de Usuario</strong>
+                                </v-col>
+                            </v-row>
+                            <div v-if="Historia">
+                                <v-data-table :headers="headers" :footer-props="{itemsPerPageText: 'Pacientes por pagina'}" :items="desserts" :sort-desc.sync="sortDesc" sort-by="fecha" class="elevation-1 cyan lighten-3">
+                                    <template v-slot:item.actions="{ item }">
+                                        <v-icon small class="mr-2" @click="editItem(item)">
+                                            mdi-pencil
+                                        </v-icon>
+                                        <v-icon small @click="deleteItem(item)">
+                                            mdi-delete
+                                        </v-icon>
+                                    </template>
 
-                    <div class="text-center">
-                        <!--
+                                </v-data-table>
+                            </div>
+                        </v-container>
+                    </v-form>
+                </v-container>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="v_agendar" fullscreen hide-overlay transition="dialog-bottom-transition">
+            <v-toolbar dark color="#1CA698">
+                <v-btn icon dark @click="cerrar_agendar">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>AGENDAR</v-toolbar-title>
+                <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-card>
+                <v-container>
+
+                    <v-form ref="form_cita" @submit.prevent="">
+
+                        <div class="text-center">
+                            <!--
                                     <v-btn class="ma-2" :loading="loading2" :disabled="loading2" color="success" @click="loader = 'loading2'">
                                         Cita anterior
                                         <template v-slot:loader>
@@ -208,215 +209,235 @@
                                         </template>
                                     </v-btn>
                                     -->
-                        <v-btn class="ma-2" color="info" @click="loader = 'loading4'">
-                            Cita posterior
-                            <template v-slot:loader>
-                                <span class="custom-loader">
-                                    <v-icon light>mdi-cached</v-icon>
-                                </span>
-                            </template>
-                        </v-btn>
-                        <div id="main" class="grid grid-cols-3 gap-1 justify-evenly">
-                            <v-text-field v-model="fecha_cita_actual" :rules="nombreRules" :min="fechacitaMin" @change="change_fecha2" type="date" label="Fecha de Cita">
-                            </v-text-field>
-                            <div>
-                                <v-select v-model="equipo_actual" :items="equipos_actuales" :rules="selectRules" @change="cambioequipo" color="purple darken-3" label="Equipo">
-                                </v-select>
+                            <v-btn class="ma-2" color="info" @click="loader = 'loading4'">
+                                Cita posterior
+                                <template v-slot:loader>
+                                    <span class="custom-loader">
+                                        <v-icon light>mdi-cached</v-icon>
+                                    </span>
+                                </template>
+                            </v-btn>
+                            <div id="main" class="grid grid-cols-3 gap-1 justify-evenly">
+                                <v-text-field v-model="fecha_cita_actual" :rules="nombreRules" :min="fechacitaMin" @change="change_fecha2" type="date" label="Fecha de Cita">
+                                </v-text-field>
+                                <div>
+                                    <v-select v-model="equipo_actual" :items="equipos_actuales" :rules="selectRules" @change="cambioequipo" color="purple darken-3" label="Equipo">
+                                    </v-select>
+                                </div>
+                                <div>
+                                    <v-select v-model="t_equipo" :items="tiempos_actuales" :rules="selectRules" color="purple darken-3" label="Hora de inicio">
+                                    </v-select>
+                                </div>
                             </div>
                             <div>
-                                <v-select v-model="t_equipo" :items="tiempos_actuales" :rules="selectRules" color="purple darken-3" label="Hora de inicio">
+
+                                <v-select v-model="ttipocita" :items="tipo_cita" color="purple darken-3" label="Tipo de cita">
                                 </v-select>
+                                <v-select v-model="tlugar" :items="ttlugares" color="purple darken-3" label="Lugar">
+                                </v-select>
+                                <v-text-field v-model="tobservacion" type="text" label="Observacion">
+                                </v-text-field>
                             </div>
                         </div>
-                        <div>
+                        <v-btn type="submit" color="primary" class="mr-4" @click="guardar_cita" @click.stop="v_agendar=false">
+                            Guardar Cita
+                        </v-btn>
+                        <v-btn type="submit" color="primary" class="mr-4" @click="imprimir_directo" @click.stop="v_agendar=false">
+                            Boleta
+                        </v-btn>
+                    </v-form>
+                </v-container>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="v_editar_agendar" fullscreen hide-overlay transition="dialog-bottom-transition">
+            <v-toolbar dark color="#1CA698">
+                <v-btn icon dark @click="cerrar_editar_cita">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>v_editar_agendar</v-toolbar-title>
+                <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-card>
+                <v-container>
 
-                            <v-select v-model="ttipocita" :items="tipo_cita" color="purple darken-3" label="Tipo de cita">
-                            </v-select>
-                            <v-select v-model="tlugar" :items="ttlugares" color="purple darken-3" label="Lugar">
-                            </v-select>
-                            <v-text-field v-model="tobservacion" type="text" label="Observacion">
-                            </v-text-field>
+                    <v-form ref="form_cita_edit" @submit.prevent="">
+                        <div id="main" class="text-center">
+                            <div class="grid grid-cols-2 gap-1 justify-evenly">
+                                <div>
+                                    <v-text-field v-model="editar.ci" label="Cedula de identidad">
+                                    </v-text-field>
+                                </div>
+                                <div class="text-black">
+                                    <v-select  label="Expedido" v-model="editar.nom_municipio" :items="departamentos" :rules="selectRules">
+                                    </v-select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-1 justify-evenly">
+                                <div>
+                                    <v-text-field v-model="editar.nombre" label="Nombre">
+                                    </v-text-field>
+                                </div>
+                                <div>
+                                    <v-text-field v-model="editar.ap_paterno" label="Apellido Paterno">
+                                    </v-text-field>
+                                </div>
+                                <div>
+                                    <v-text-field v-model="editar.ap_materno" label="Apellido Materno">
+                                    </v-text-field>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1 justify-evenly">
+                                <div>
+                                    <v-text-field v-model="editar.fecha" :rules="nombreRules" :min="fechacitaMin" @change="change_fecha(editar)" type="date" label="Fecha de Cita">
+                                    </v-text-field>
+                                </div>
+                                <div>
+                                    <v-select v-model="editar.equipo" :items="equipos_actuales" :rules="selectRules" @change="cambioequipos(editar)" color="purple darken-3" label="Equipo">
+                                    </v-select>
+                                </div>
+                                <div>
+                                    <v-select v-model="editar.hora" :items="tiempos_actuales" :rules="selectRules" color="purple darken-3" label="Hora de inicio">
+                                    </v-select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1 justify-evenly">
+                                <div>
+                                    <v-select v-model="editar.tipo_cita" :items="tipo_cita" color="purple darken-3" label="Tipo de cita">
+                                    </v-select>
+                                </div>
+                                <div>
+                                    <v-select v-model="editar.lugar" :items="ttlugares" color="purple darken-3" label="Lugar">
+                                    </v-select>
+                                </div>
+                                <div>
+                                    <v-text-field v-model="editar.observacion" type="text" label="Observacion">
+                                    </v-text-field>
+                                </div>
+                            </div>
+                        </div>
+                        <v-btn type="submit" color="primary" class="mr-4" @click="guardar_cita_edit" @click.stop="v_agendar=false">
+                            Guardar
+                        </v-btn>
+                        <v-btn type="submit" color="primary" class="mr-4" @click="eliminar_cita">
+                            Eliminar
+                        </v-btn>
+                    </v-form>
+                </v-container>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog id="modalInvoice" v-model="v_imprimir" fullscreen transition="dialog-bottom-transition">
+            <v-toolbar dark color="#1CA698">
+                <v-btn icon dark @click="v_imprimir=false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Boleta</v-toolbar-title>
+                <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-card>
+                <div class="center_columna .item1">
+                    <v-btn @click="imprimir_boleta">
+                        imprimir
+                    </v-btn>
+                </div>
+                <div id="print">
+                    <div class="center_columna .item1">
+                        <div><img src="https://pbs.twimg.com/profile_images/1405210297036525568/0KEhDx7D_400x400.jpg" width="100px" height="100px"></div>
+                        <div class="aling">
+                            <p class="titulo">Gobierno Autónomo Departamental de La Paz</p>
+                            <p class="titulo2">SERVICIO DEPARTAMENTAL DE SALUD <br>
+                                UNIDAD DE TRATAMIENTO, REHABILITACION, INVESTIGACION SOCIAL EN DROGODEPENDENCIAS Y DISCAPACIDAD</p>
+                            <p class="titulo3">UTRAID - LA PAZ</p>
+                        </div>
+                        <div><img src="https://scontent.flpb1-1.fna.fbcdn.net/v/t1.6435-9/195975552_5609812179090371_6523992678396965776_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=174925&_nc_ohc=Q__ncnQ9wdsAX9F1k9j&_nc_ht=scontent.flpb1-1.fna&oh=00_AT9AKy3kTnKXSiEuySxYnEqyl5t_M59YrL0o4MECdWlANA&oe=62B0F082" width="100px" height="100px"></div>
+                    </div>
+                    <div class="wrapper alinear_elemento">
+                        <div class="box one">
+                            <label>NOMBRE COMPLETO:</label>
+                            <label class="texto_nombre">{{selectedEvent.nombre}} {{selectedEvent.ap_paterno}} {{selectedEvent.ap_materno}}</label>
+                        </div>
+                        <div class="box two">
+                            <label>Fecha:</label>
+                            <p>{{textoDate(selectedEvent.fecha)}} </p>
+                        </div>
+                        <div class="box three">
+                            <label>Hora:</label>
+                            <p>{{selectedEvent.hora}} </p>
+                        </div>
+                        <div class="box four">
+                            <label>
+                                Lugar de Evaluacion:
+                            </label>
+                            <p>{{selectedEvent.lugar}}</p>
                         </div>
                     </div>
-                    <v-btn type="submit" color="primary" class="mr-4" @click="guardar_cita" @click.stop="v_agendar=false">
-                        Guardar Cita
+                    <div class="grid-item">
+                        <div class="alinear_elemento">
+                            <label class="label">Observaciones: </label>
+                            <textarea class="observaciones" rows="2" cols="100" v-model="selectedEvent.observacion">{{selectedEvent.observacion}}</textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="texto_mediano">
+                            LA FALTA DE DOCUMENTACION Y EL RETRASO DE 10 MINUTOS DARA LUGAR A REPROGRAMAR<br>
+                            PRESENTARSE 10 MINUTOS ANTES DE LA HORA DE PROGRAMACION<br>
+                            DE NO ASISTIR INFORMAR CON 48 HORAS DE ANTICIPACION TELEFONO 2412391 UTRAID<br>
+                            TRAER: 2 FOTOCOPIAS C.I., 1 COPIA CARNET DISCAPACIDAD, INFORME MEDICO ORIGINAL, CROQUIS DOMICILIO<br>
+                            PRESENTAR SU DOCUMENTACION EN FOLDER AMARILLO TAMAÑO OFICIO CON FASTENER</label>
+                    </div>
+
+                </div>
+
+            </v-card>
+        </v-dialog>
+
+        <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
+            <v-card color="grey lighten-4" min-width="350px" flat>
+                <v-toolbar :color="selectedEvent.color" dark>
+                    <v-btn icon @click="guardar_se_presento">
+                        <v-icon>mdi-content-save</v-icon>
                     </v-btn>
-                    <v-btn type="submit" color="primary" class="mr-4" @click="imprimir_directo" @click.stop="v_agendar=false">
+                    <v-toolbar-title v-html="selectedEvent.nombre"></v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="editar_cita">
+                        <v-icon>mdi-table-edit</v-icon>
+                    </v-btn>
+                </v-toolbar>
+                <v-card-text>
+                    <span v-html="selectedEvent.details"></span>
+                    <label class="font-bold">
+                        Carnet: {{selectedEvent.ci}}
+                    </label><br>
+                    <label class="font-bold">
+                        Nombre Completo: {{selectedEvent.name}} {{selectedEvent.ap_paterno}} {{selectedEvent.ap_materno}}
+                    </label><br>
+                    <label class="font-bold">
+                        Tipo de cita: {{selectedEvent.tipo_cita}}
+                    </label><br>
+                    <label class="font-bold">
+                        Se presento:
+                        <v-select v-model="selectedEvent.se_presento" :items="opsepresento" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
+                    </label><br>
+
+                    <label class="font-bold" v-if="selectedEvent.se_presento=='Si'">
+                        Fue Atendido:
+                        <v-select v-model="selectedEvent.ci_doctor" :dark="color" hint="Pick your meal" item-text="nombre" item-value="ci" :items="doctores" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
+                    </label>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn color="primary" @click="imprimir">
                         Boleta
                     </v-btn>
-                </v-form>
-            </v-container>
-        </v-card>
-    </v-dialog>
-    <v-dialog v-model="v_editar_agendar" fullscreen hide-overlay transition="dialog-bottom-transition">
-        <v-toolbar dark color="#1CA698">
-            <v-btn icon dark @click="cerrar_editar_cita">
-                <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>v_editar_agendar</v-toolbar-title>
-            <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-card>
-            <v-container>
-
-                <v-form ref="form_cita_edit" @submit.prevent="">
-                    <div class="text-center">
-                        <div id="main" class="grid grid-cols-3 gap-1 justify-evenly">
-                            <div>
-                                <v-text-field v-model="editar.name" label="Nombre">
-                                </v-text-field>
-                            </div>
-                            <div>
-                                <v-text-field v-model="editar.ap_paterno" label="Apellido Paterno">
-                                </v-text-field>
-                            </div>
-                            <div>
-                                <v-text-field v-model="editar.ap_materno" label="Apellido Materno">
-                                </v-text-field>
-                            </div>
-                        </div>
-                        <div>
-                            <v-text-field v-model="editar.fecha" :rules="nombreRules" :min="fechacitaMin" @change="change_fecha(editar)" type="date" label="Fecha de Cita">
-                            </v-text-field>
-                        </div>
-                        <div>
-                            <v-select v-model="editar.equipo" :items="equipos_actuales" :rules="selectRules" @change="cambioequipos(editar)" color="purple darken-3" label="Equipo">
-                            </v-select>
-                        </div>
-                        <div>
-                            <v-select v-model="editar.hora" :items="tiempos_actuales" :rules="selectRules" color="purple darken-3" label="Hora de inicio">
-                            </v-select>
-                        </div>
-                        <div>
-                            <v-select v-model="editar.tipo_cita" :items="tipo_cita" color="purple darken-3" label="Tipo de cita">
-                            </v-select>
-                            <v-select v-model="editar.lugar" :items="ttlugares" color="purple darken-3" label="Lugar">
-                            </v-select>
-                            <v-text-field v-model="editar.observacion" type="text" label="Observacion">
-                            </v-text-field>
-                        </div>
-                    </div>
-                    <v-btn type="submit" color="primary" class="mr-4" @click="guardar_cita_edit" @click.stop="v_agendar=false">
-                        Guardar
+                    <v-btn text color="secondary" @click="selectedOpen = false">
+                        Cancel
                     </v-btn>
-                    <v-btn type="submit" color="primary" class="mr-4" @click="eliminar_cita">
-                        Eliminar
-                    </v-btn>
-                </v-form>
-            </v-container>
-        </v-card>
-    </v-dialog>
+                </v-card-actions>
+            </v-card>
+        </v-menu>
 
-    <v-dialog id="modalInvoice" v-model="v_imprimir" fullscreen transition="dialog-bottom-transition">
-        <v-toolbar dark color="#1CA698">
-            <v-btn icon dark @click="v_imprimir=false">
-                <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>Boleta</v-toolbar-title>
-            <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-card>
-            <div class="center_columna .item1">
-                <v-btn @click="imprimir_boleta">
-                    imprimir
-                </v-btn>
-            </div>
-            <div id="print">
-                <div class="center_columna .item1">
-                    <div><img src="https://pbs.twimg.com/profile_images/1405210297036525568/0KEhDx7D_400x400.jpg" width="100px" height="100px"></div>
-                    <div class="aling">
-                        <p class="titulo">Gobierno Autónomo Departamental de La Paz</p>
-                        <p class="titulo2">SERVICIO DEPARTAMENTAL DE SALUD <br>
-                            UNIDAD DE TRATAMIENTO, REHABILITACION, INVESTIGACION SOCIAL EN DROGODEPENDENCIAS Y DISCAPACIDAD</p>
-                        <p class="titulo3">UTRAID - LA PAZ</p>
-                    </div>
-                    <div><img src="https://scontent.flpb1-1.fna.fbcdn.net/v/t1.6435-9/195975552_5609812179090371_6523992678396965776_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=174925&_nc_ohc=Q__ncnQ9wdsAX9F1k9j&_nc_ht=scontent.flpb1-1.fna&oh=00_AT9AKy3kTnKXSiEuySxYnEqyl5t_M59YrL0o4MECdWlANA&oe=62B0F082" width="100px" height="100px"></div>
-                </div>
-                <div class="wrapper alinear_elemento">
-                    <div class="box one">
-                        <label>NOMBRE COMPLETO:</label>
-                        <label class="texto_nombre">{{selectedEvent.name}} {{selectedEvent.ap_paterno}} {{selectedEvent.ap_materno}}</label>
-                    </div>
-                    <div class="box two">
-                        <label>Fecha:</label>
-                        <p>{{textoDate(selectedEvent.fecha)}} </p>
-                    </div>
-                    <div class="box three">
-                        <label>Hora:</label>
-                        <p>{{selectedEvent.hora}} </p>
-                    </div>
-                    <div class="box four">
-                        <label>
-                            Lugar de Evaluacion:
-                        </label>
-                        <p>{{selectedEvent.lugar}}</p>
-                    </div>
-                </div>
-                <div class="grid-item">
-                    <div class="alinear_elemento">
-                        <label class="label">Observaciones: </label>
-                        <textarea class="observaciones" rows="2" cols="100" v-model="selectedEvent.observacion">{{selectedEvent.observacion}}</textarea>
-                    </div>
-                </div>
-                <div>
-                    <label class="texto_mediano">
-                        LA FALTA DE DOCUMENTACION Y EL RETRASO DE 10 MINUTOS DARA LUGAR A REPROGRAMAR<br>
-                        PRESENTARSE 10 MINUTOS ANTES DE LA HORA DE PROGRAMACION<br>
-                        DE NO ASISTIR INFORMAR CON 48 HORAS DE ANTICIPACION TELEFONO 2412391 UTRAID<br>
-                        TRAER: 2 FOTOCOPIAS C.I., 1 COPIA CARNET DISCAPACIDAD, INFORME MEDICO ORIGINAL, CROQUIS DOMICILIO<br>
-                        PRESENTAR SU DOCUMENTACION EN FOLDER AMARILLO TAMAÑO OFICIO CON FASTENER</label>
-                </div>
-
-            </div>
-
-        </v-card>
-    </v-dialog>
-
-    <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
-        <v-card color="grey lighten-4" min-width="350px" flat>
-            <v-toolbar :color="selectedEvent.color" dark>
-                <v-btn icon @click="guardar_se_presento">
-                    <v-icon>mdi-content-save</v-icon>
-                </v-btn>
-                <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon @click="editar_cita">
-                    <v-icon>mdi-table-edit</v-icon>
-                </v-btn>
-            </v-toolbar>
-            <v-card-text>
-                <span v-html="selectedEvent.details"></span>
-                <label>
-                    Carnet: {{selectedEvent.id}}
-                </label><br>
-                <label>
-                    Nombre Completo: {{selectedEvent.name}} {{selectedEvent.ap_paterno}} {{selectedEvent.ap_materno}}
-                </label><br>
-                <label>
-                    Tipo de cita: {{selectedEvent.tipo_cita}}
-                </label><br>
-                <label>
-                    Se presento:
-                    <v-select v-model="selectedEvent.se_presento" :items="opsepresento" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
-                </label><br>
-
-                <label v-if="selectedEvent.se_presento=='Si'">
-                    Fue Atendido:
-                    <v-select v-model="selectedEvent.ci_doctor" item-text="nombre" item-value="ci" :items="doctores" :menu-props="{ top: true, offsetY: true }" label=""></v-select>
-                </label>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" @click="imprimir">
-                    Boleta
-                </v-btn>
-                <v-btn text color="secondary" @click="selectedOpen = false">
-                    Cancel
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-menu>
-
-</div>
+    </div>
+</v-app>
 </template>
 
 <script>
@@ -643,7 +664,7 @@ export default {
             console.log(item);
             this.v_editar_agendar = true
             this.editar = item;
-            
+
             Object.assign(this.editar, {
                 hora: this.editar.hora_inicio
             });
@@ -1096,24 +1117,17 @@ export default {
                 const second = new Date(element.fecha + 'T' + element.hora_final + '-04:00')
                 var datos = {
                     name: element.nombre,
-                    id: element.ci,
-                    fecha: element.fecha,
-                    ap_materno: element.ap_materno,
-                    ap_paterno: element.ap_paterno,
-                    hora: element.hora_inicio,
-                    equipo: element.equipo,
-                    observacion: element.observacion,
-                    tipo_cita: element.tipo_cita,
-                    lugar: element.lugar,
-                    se_presento: element.se_presento,
-                    ci_doctor: element.ci_doctor,
                     start: first,
                     end: second,
-                    color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                    color: 'black',
                     timed: 1,
                     category: this.categories[element.equipo - 1],
                 }
-
+                if(element.nom_municipio == ''){
+                    element.nom_municipio = 'No se tiene registro'
+                }   
+                
+                datos = Object.assign(datos, element);
                 this.events.push(datos)
             }
         },

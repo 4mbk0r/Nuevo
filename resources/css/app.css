@@ -229,3 +229,7 @@
   }
 
 }
+
+.v-select .v-text-field label {
+  color: blue !important;
+}
