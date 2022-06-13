@@ -281,7 +281,7 @@ class CitaController extends Controller
         $cita_fecha = DB::table('citas')->select('*')
         ->where('fecha', $cita['fecha'])
         ->where('equipo', $cita['equipo'])
-        ->where('hora_inicio', $cita['hora'])
+        ->where('hora_inicio', $cita['hora_inicio'])
         ->delete();
         Cache::forget('citas' . $cita['fecha']);
         return 'ok';
