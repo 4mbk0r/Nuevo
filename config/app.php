@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://192.168.1.6/'),
 
     'asset_url' => env('ASSET_URL', null),
 
@@ -133,7 +133,7 @@ return [
     | this array to grant expanded functionality to your applications.
     |
     */
-
+    'mix_url' => env('APP_URL', '/example-app/public'),
     'providers' => [
 
         /*

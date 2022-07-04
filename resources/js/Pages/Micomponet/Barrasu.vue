@@ -178,7 +178,6 @@
                                             mdi-delete
                                         </v-icon>
                                     </template>
-
                                 </v-data-table>
                             </div>
                         </v-container>
@@ -268,7 +267,7 @@
                                     </v-text-field>
                                 </div>
                                 <div class="text-black">
-                                    <v-select  label="Expedido" v-model="editar.nom_municipio" :items="departamentos" :rules="selectRules">
+                                    <v-select label="Expedido" v-model="editar.nom_municipio" :items="departamentos" :rules="selectRules">
                                     </v-select>
                                 </div>
                             </div>
@@ -297,7 +296,7 @@
                                     </v-select>
                                 </div>
                                 <div>
-                                    <v-select v-model="editar.hora" :items="tiempos_actuales" :rules="selectRules" color="purple darken-3" label="Hora de inicio">
+                                    <v-select v-model="editar.hora_inicio" :items="tiempos_actuales" :rules="selectRules" color="purple darken-3" label="Hora de inicio">
                                     </v-select>
                                 </div>
                             </div>
@@ -670,19 +669,16 @@ export default {
             });
 
             this.tiempos_actuales = [];
-            console.log("este es un evento")
-            console.log(this.selectedEvent)
+            console.log("---este es un evento---")
+            console.log(this.editar)
+
+            this.selecevent = this.selectedEvent;
             this.selectedEvent = item;
-            this.selecevent = {
-                fecha: this.selectedEvent.fecha,
-                equipo: this.selectedEvent.equipo,
-                hora: this.selectedEvent.hora_inicio
-            }
             await this.change_fecha(this.editar);
             this.v_editar_agendar = true;
             this.tiempos_actuales = this.lista_tiempos['' + this.editar.equipo];
             //this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
-            this.tiempos_actuales.push(this.editar.hora_inicio);
+            this.tiempos_actuales.push();
         },
         async deleteItem(item) {
             await this.eliminar_cita2(item);
@@ -711,7 +707,7 @@ export default {
         async editar_cita() {
 
             this.tiempos_actuales = [];
-            console.log("este es un evento")
+            console.log("_____este es un evento____")
             console.log(this.selectedEvent)
             this.editar = this.selectedEvent
             this.selecevent = {
@@ -723,9 +719,11 @@ export default {
             this.v_editar_agendar = true;
 
             this.tiempos_actuales = this.lista_tiempos['' + this.editar.equipo];
-            //this.tiempos_actuales = this.lista_tiempos['' + this.equipo_actual];
+            
+            this.tiempos_actuales.push(this.editar.hora_inicio);
+            this.tiempos_actuales.sort()
+            this.editar.hora_inicio=this.editar.hora_inicio
 
-            this.tiempos_actuales.push(this.editar.hora);
         },
         cerrar_agendar() {
             this.v_agendar = false;
@@ -822,12 +820,12 @@ export default {
         },
         async eliminar_cita() {
             console.log("----")
-            console.log(this.selecevent)
+            console.log(this.selectedEvent)
             var res = await axios({
                 method: 'post',
                 url: 'api/eliminar_cita',
                 data: {
-                    cita: this.selecevent,
+                    cita: this.selectedEvent,
                 }
             }).then();
             console.log(res)
@@ -835,7 +833,7 @@ export default {
             this.traerdatos();
         },
         async eliminar_cita2() {
-
+            alert("ss");
             var res = await axios({
                 method: 'post',
                 url: 'api/eliminar_cita2',
@@ -1123,10 +1121,9 @@ export default {
                     timed: 1,
                     category: this.categories[element.equipo - 1],
                 }
-                if(element.nom_municipio == ''){
+                if (element.nom_municipio == '') {
                     element.nom_municipio = 'No se tiene registro'
-                }   
-                
+                }
                 datos = Object.assign(datos, element);
                 this.events.push(datos)
             }
@@ -1136,39 +1133,14 @@ export default {
             this.doctorlista()
         },
         async doctorlista() {
-            let url = '/api/doctor';
-            var a = await axios.get(url).then();
+            var a = await axios.get('api/doctor').then();
             this.doctores = a['data'];
-
         },
         async traerdatos() {
             console.log(this.fecha_hoy);
             var a = await axios.get('api/citas_fecha/' + this.fecha_hoy).then();
             this.addelemento(a['data']);
 
-        },
-        async addEvent() {
-            if (this.$refs.formcita.validate()) {
-                /*//const allDay = this.rnd(0, 3) === 0
-                const first = new Date(this.fecha_cita + 'T' + this.tiempo_inicio + ':00-04:00')
-                //alert(first)
-                const second = new Date(this.fecha_cita + 'T' + this.timepo_fin + ':00-04:00')
-                //alert(this.selectequipo);
-                this.events.push({
-                    name: this.nombre + ' ' + this.paterno,
-                    start: first,
-                    end: second,
-                    color: this.color,
-                    timed: 1,
-                    category: this.categories[this.selectequipo - 1],
-                })
-                this.$refs.formcita.reset();
-                this.msg_usuario = '';
-                this.datos_usuario = null;*/
-            } else {
-                this.dialog = true;
-            }
-            //this.$refs.formcita.reset();
         },
         getEventColor(event) {
             return event.color
